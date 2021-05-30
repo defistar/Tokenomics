@@ -2,8 +2,15 @@ pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
-contract TokenManager {
+
+interface IKanthDeFiToken {
+    function mint(address account, uint256 amount) external returns (bool);
+    function burn(address account, uint256 amount) external returns (bool);
+}
       
+
+contract TokenManager {
+
     /// @dev Libraries
     using SafeMath for uint;
 
@@ -33,12 +40,12 @@ contract TokenManager {
     }
 
     function mintTokens(address user, uint256 amount) onlyMinter external returns (bool) {
-
+        IKanthDeFiToken(tokenAddress).mint(user, amount);
         return true;
     }
 
     function burnTokens(address user, uint256 amount) onlyBurner external returns (bool) {
-        
+        IKanthDeFiToken(tokenAddress).burn(user, amount);
         return true;
     }
 
