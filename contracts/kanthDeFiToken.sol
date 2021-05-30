@@ -20,6 +20,7 @@ contract KanthDeFiToken is AccessControl, ERC20, ERC20Pausable {
         _setupRole(MINTER_ROLE, msg.sender);
         _setupRole(PAUSER_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, minter_);
+		_mint(msg.sender, 100000);
     }
 
     /// @notice Fallback function
