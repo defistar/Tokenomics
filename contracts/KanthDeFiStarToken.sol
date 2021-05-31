@@ -17,7 +17,7 @@ contract KanthDeFiStarToken is AccessControl, ERC20, ERC20Pausable {
 
     constructor()
         public
-        ERC20("KanthDeFiStar-Token", "KANTHDEFISTAR") {
+        ERC20("KanthDeFiPool-Token", "KANTHDEFIPOOL") {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(MINTER_ROLE, msg.sender);
         _setupRole(BURNER_ROLE, msg.sender);
@@ -50,7 +50,6 @@ contract KanthDeFiStarToken is AccessControl, ERC20, ERC20Pausable {
         revokeRole(MINTER_ROLE, account);
         return true;
     }
-
 
     /// @notice Pause all the functions
     /// @dev the caller must have the 'PAUSER_ROLE'
@@ -85,7 +84,6 @@ contract KanthDeFiStarToken is AccessControl, ERC20, ERC20Pausable {
         super._beforeTokenTransfer(from, to, amount);
     }
 
-
     function mintToken(address user, uint256 amount) external returns (bool){
         require(hasRole(MINTER_ROLE, msg.sender), "DEFISTAR: caller is not allowed to mint tokens");
         require(user != address(0),"user should be a valid address");
@@ -102,6 +100,4 @@ contract KanthDeFiStarToken is AccessControl, ERC20, ERC20Pausable {
         _burn(user, amount);
         return true;
     }
-
-
 }
