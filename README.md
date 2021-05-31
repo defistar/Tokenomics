@@ -13,9 +13,14 @@ truffle migrate --reset --network ropsten
 - owner: 0x1F61741610892C0A4D3e831Dc91958df2dc27182
    - https://ropsten.etherscan.io/address/0x1F61741610892C0A4D3e831Dc91958df2dc27182
 
-- tokenManager: 0xD56BFfe6A77D52600F8FE547A0548608D6670cE2
-    - https://ropsten.etherscan.io/address/0xD56BFfe6A77D52600F8FE547A0548608D6670cE2
+- tokenManager: 0xc81B475c24Aa09441e99ebb5dC0C24f0C89f8683
+    - https://ropsten.etherscan.io/address/0xc81B475c24Aa09441e99ebb5dC0C24f0C89f8683
 
+- user-1: 0x4f8e8d218bb72fA696742ce645d721F3B568a3Db    
+    - https://ropsten.etherscan.io/address/0x4f8e8d218bb72fA696742ce645d721F3B568a3Db
+
+- user-2: 0x5259267492F0855930072764AEa2602fC547a28f    
+    - https://ropsten.etherscan.io/address/0x5259267492F0855930072764AEa2602fC547a28f
 
 ## Command execution for min, burn, totalSupply on kanthDeFiStarToken contract
 
@@ -27,15 +32,13 @@ const kanthDeFiStarTokenJson = require("./build/contracts/KanthDeFiStarToken.jso
 const kanthDeFiStarTokenAbi = kanthDeFiStarTokenJson.abi;
 const kanthDefiStarTokenInstance = await new web3.eth.Contract(kanthDeFiStarTokenAbi,kanthDeFiStarTokenAddress);
 
-var mintRsp1 = await kanthDefiStarTokenInst.methods.mintToken(owner,45555555555).send({"from" : owner})
-
+var mintRsp1 = await kanthDefiStarTokenInstance.methods.mintToken(owner, 1000000 * 10**18).send({"from" : owner})
 await kanthDefiStarTokenInstance.methods.totalSupply().call()
-1000000000000045555555555
+2000000000000000000000000
 
-var burnRsp1 = await kanthDefiStarTokenInst.methods.burnToken(owner,25555555555).send({"from" : owner})
-
+var burnRsp1 = await kanthDefiStarTokenInstance.methods.burnToken(owner, 50000 * 10**18).send({"from" : owner})
 await kanthDefiStarTokenInstance.methods.totalSupply().call()
-1000000000000020000000000
+
 ```
 
 ## Command execution for min, burn, lock, release functions on TokenManager contract
@@ -50,16 +53,22 @@ const kanthDeFiStarTokenJson = require("./build/contracts/KanthDeFiStarToken.jso
 const kanthDeFiStarTokenAbi = kanthDeFiStarTokenJson.abi;
 const kanthDefiStarTokenInstance = await new web3.eth.Contract(kanthDeFiStarTokenAbi,kanthDeFiStarTokenAddress);
 
-const tokenManagerAddress = "0xD56BFfe6A77D52600F8FE547A0548608D6670cE2";
+const tokenManagerAddress = "0xc81B475c24Aa09441e99ebb5dC0C24f0C89f8683";
 const tokenManagerJson = require("./build/contracts/TokenManager.json");
 const tokenManagerAbi = tokenManagerJson.abi;
 const tokenManagerInstance = await new web3.eth.Contract(tokenManagerAbi,tokenManagerAddress);
+                                                                                      
+var mintRsp1 = await kanthDefiStarTokenInstance.methods.mintToken(tokenManagerAddress,100000 * 10**18).send({"from" : owner})
 
 const user1 = accounts[1];
-var lockTokensResponse = await tokenManagerInstance.methods.lockTokens(user1,45555555555).send({"from" : owner})
+var lockTokensResponse = await tokenManagerInstance.methods.lockTokens(user1, 2000 * 10**18).send({"from" : owner})
+
+await tokenManagerInstance.methods.getLockedUserTokenBalance(user1).call()
+
+var releaseTokensResponse = await tokenManagerInstance.methods.releaseTokens(user1, 1000 * 10**18).send({"from" : owner})
+await kanthDefiStarTokenInstance.methods.balanceOf(user1).call()
+1000000000000000000000
 
 const user2 = accounts[2];
-var lockTokensResponse = await tokenManagerInstance.methods.lockTokens(user2,25555555555).send({"from" : owner})
-
-var releaseTokensResponse = await tokenManagerInstance.methods.releaseTokens(user1,45555555555).send({"from" : owner})
+var lockTokensResponse = await tokenManagerInstance.methods.lockTokens(user2, 1000 * 10**18).send({"from" : owner})
 ```
