@@ -1,13 +1,12 @@
 pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
-
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface IKanthDeFiToken {
-    function mint(address account, uint256 amount) external returns (bool);
-    function burn(address account, uint256 amount) external returns (bool);
+    function mintToken(address account, uint256 amount) external returns (bool);
+    function burnToken(address account, uint256 amount) external returns (bool);
 }
-      
 
 contract TokenManager {
 
@@ -17,6 +16,10 @@ contract TokenManager {
     address private tokenAddress;
     address private minterAndBurnerAddress;
     address private owner;
+
+    mapping(address => uint256) private lockedUserBalances;
+    mapping(address => address) private usersWithLockedBalance;
+    uint256 private totalLockedUserTokens;
 
     constructor(address _tokenAddress, address _minterAndBurnerAddress) public {
         tokenAddress =  _tokenAddress;
@@ -39,21 +42,49 @@ contract TokenManager {
         _;
     }
 
-    function mintTokens(address user, uint256 amount) onlyMinter external returns (bool) {
-        IKanthDeFiToken(tokenAddress).mint(user, amount);
+    function mintTokens(address user, uint256 amount) onlyMinter public returns (bool) {
+        require(user != address(0),"user should be a valid address");
+        require(amount > 0, "amount should be valid");
+        IKanthDeFiToken(tokenAddress).mintToken(user, amount);
         return true;
     }
 
-    function burnTokens(address user, uint256 amount) onlyBurner external returns (bool) {
-        IKanthDeFiToken(tokenAddress).burn(user, amount);
+    function burnTokens(address user, uint256 amount) onlyBurner public returns (bool) {
+        require(user != address(0),"user should be a valid address");
+        require(amount > 0, "amount should be valid");
+        IKanthDeFiToken(tokenAddress).burnToken(user, amount);
         return true;
     }
 
-    function lockTokens(address user, uint256 amount) onlyOwner external returns (bool) {
-        
-
-
+    function lockTokens(address user, uint256 amount) onlyOwner public returns (bool) {
+        require(amount > 0, "nonZero AMount to be locked");
+        require(user != address(0), "user should be a valid address");
+        lockedUserBalances[user].add(amount);
+        usersWithLockedBalance[user] = user;
+        totalLockedUserTokens = totalLockedUserTokens + amount;
         return true;
     }
 
+    function releaseTokens(address user, uint256 amount) onlyOwner public returns(bool){
+        require(amount > 0, "locked amount should be nonZero Amount");
+        require(user != address(0), "user should be a valid address");
+        require(usersWithLockedBalance[user] != address(0), "user is not in lockedBalances mapping");
+        require(amount >= lockedUserBalances[user], "cannot release amount more than locked in User Account");
+        IERC20(tokenAddress).transfer(user, amount);
+        totalLockedUserTokens = totalLockedUserTokens - amount;
+    }
+
+    function getTotalLockedUserTokens() view external returns (uint256) {
+        return totalLockedUserTokens;
+    }
+
+    function getLockedUserTokenBalance(address user) view external returns (uint256) {
+        require(user != address(0), "user should be a valid address");
+        return lockedUserBalances[user];
+    }
+
+    function doesUserHaveLockedBalance(address user) view external returns (bool) {
+        require(user != address(0), "user should be a valid address");
+        return usersWithLockedBalance[user]!= address(0);
+    }
 }

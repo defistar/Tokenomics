@@ -59,10 +59,8 @@ module.exports = {
       confirmations: 2,
       network_id: 1,
       skipDryRun: false
-    },
-   
-    ropsten: {
-      provider: () => new HDWalletProvider(mnemonic, `wss://ropsten.infura.io/ws/v3/` + infuraProjectId),
+    },ropsten: {
+      provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/` + infuraProjectId),
       network_id: 3, // Ropsten's id
       gas: 5500000, // Ropsten has a lower block limit than mainnet
       confirmations: 2, // # of confs to wait between deployments. (default: 0)
@@ -70,15 +68,6 @@ module.exports = {
       // skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
       networkCheckTimeout: 1000000000,
     },
-    kovan: {
-      provider: () => new HDWalletProvider(mnemonic, `wss://kovan.infura.io/ws/v3/` + infuraProjectId),
-      network_id: 42, // Ropsten's id
-      gas: 5500000, // Ropsten has a lower block limit than mainnet
-      confirmations: 2, // # of confs to wait between deployments. (default: 0)
-      timeoutBlocks: 50, // # of blocks before a deployment times out  (minimum/default: 50)
-      // skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
-      networkCheckTimeout: 1000000000,
-    }
   },
 
   // Set default mocha options here, use special reporters etc.

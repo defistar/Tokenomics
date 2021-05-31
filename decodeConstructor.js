@@ -1,0 +1,22 @@
+const abi = require('ethereumjs-abi');
+
+//https://ethereum.stackexchange.com/questions/37492/constructor-arguments-for-verification-on-etherscan-io
+function decodeTx() {
+  const data = Buffer.from(`000000000000000000000000000000000000000000000000000000003b9aca01000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000014b000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003e282ad0000000000000000000000000000000000000000000000000000000000`, 'hex');
+
+  const decoded = abi.rawDecode(['uint256', 'string', 'string'], data);
+
+  console.log(`Decoded: ${JSON.stringify(decoded, null, '  ')}`);
+
+  const params = [
+    '0x3b9aca01',
+    'K',
+    '₭'
+  ];
+
+  const encoded = abi.rawEncode(['uint256', 'string', 'string'], params);
+
+  console.log(`Encoded: ${encoded.toString('hex')}`);
+}
+
+decodeTx();
